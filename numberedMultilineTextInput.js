@@ -115,7 +115,7 @@
             const currentRowNumber = event.target.rowNumber - 1;
             const currentRowValue = event.target.value;
             const carriagePosition = event.target.selectionStart;
-
+            console.log(event.code);
             switch (event.code) {
                 case 'Enter':
                     if (this.rowCount() < this.maxRowCount) {
@@ -155,6 +155,31 @@
 
                         this.rowList[currentRowNumber - 1].elementInputText.selectionStart = prevRowValue.length;
                         this.rowList[currentRowNumber - 1].elementInputText.selectionEnd = prevRowValue.length;
+                    }
+                    break;
+                case 'Delete':
+                    if (carriagePosition === currentRowValue.length && currentRowNumber < this.rowCount() - 1) {                                                    
+                        event.preventDefault();
+
+                        const nextRowValue = this.rowList[currentRowNumber + 1].elementInputText.value;
+                        const sum = currentRowValue + nextRowValue;
+
+                        if (sum.length <= this.maxCharCountInRow) {
+                            this.rowList[currentRowNumber].elementInputText.value = sum;
+                            this.removeRow(currentRowNumber + 1);
+
+                            this.rowList[currentRowNumber].elementInputText.selectionStart = carriagePosition;
+                            this.rowList[currentRowNumber].elementInputText.selectionEnd = carriagePosition;
+                        } else {
+                            this.rowList[currentRowNumber].elementInputText.value = sum.slice(0, this.maxCharCountInRow);
+                            this.rowList[currentRowNumber + 1].elementInputText.value = sum.slice(this.maxCharCountInRow + ((carriagePosition === this.maxCharCountInRow) ? 1 : 0));
+                            this.rowList[currentRowNumber + 1].recalcCharCount();
+
+                            this.rowList[currentRowNumber].elementInputText.selectionStart = carriagePosition;
+                            this.rowList[currentRowNumber].elementInputText.selectionEnd = carriagePosition;
+                        }
+
+                        this.rowList[currentRowNumber].recalcCharCount();                   
                     }
                     break;
                 case 'ArrowDown':
@@ -217,7 +242,6 @@
                 }
             }
         }
-
     }
 
     //нашли первый multiline-input
