@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Custom textarea</title>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+      }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Custom <strong>&lt;textarea&gt;</strong></h1>
+    <div class="multiline-input" maxCharCountInRow = '6'></div>
 
-<head>
-    <meta charset="utf-8">
-    <title>Тег textarea, атрибут wrap</title>
-    <link rel="stylesheet" href="index.css" />
-</head>
+    <!-- <textarea type='text' rows="5" cols="5"></textarea> -->
 
-<body>
-    <form>
-        <p><textarea class="myInput" rows="10" cols="10" wrap="hard"></textarea></p>
-        <p><input type="submit" value="Отправить" onClick="submit"></p>
-    </form>
+    <script type="text/javascript" src="./numberedMultilineTextInput.js"></script>
     <script type="text/javascript">
-        console.log('Hello, Alena!');
-        const myInput = document.querySelector('.myInput');
-        myInput.addEventListener('input', (props) => {
-            //console.log(myInput.value);
-            
-        });
-    </script>
-</body>
 
+    </script>
+  </body>
 </html>

@@ -1,0 +1,31 @@
+.multiline-input {
+        color: #000;
+        background: #FFF;
+        border: 1px solid grey;
+        
+        height: 240px;
+
+        display: grid;
+        grid-template-columns: 5% 90% 5%;
+        grid-auto-rows: 25px;
+
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+
+      .multiline-input__line-num {
+        grid-column: 1;
+        text-align: end;
+        padding-right: 2px;
+        padding-top: 3px;
+      }
+
+      .multiline-input__input-text {
+        grid-column: 2;
+      }
+
+      .multiline-input__number-of-char-in-line {
+        grid-column: 3;
+        padding-left: 2px;
+        padding-top: 3px;
+      }
