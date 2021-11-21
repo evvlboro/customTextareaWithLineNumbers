@@ -13,8 +13,7 @@
             template.innerHTML = `<span class="multiline-input__line-num">${lineNum}</span>`;
             this.elementLineNum = template.content.firstChild;
 
-            template.innerHTML = `<input type="text" class="multiline-input__input-text"
-                ${maxCharCount ? `maxlength="${maxCharCount}"` : ""}></input>`;
+            template.innerHTML = `<input type="text" class="multiline-input__input-text"></input>`;
             this.elementInputText = template.content.firstChild;
             this.elementInputText.rowNumber = lineNum;
 
@@ -33,8 +32,7 @@
         constructor(multilineInput = null) {
             this.rowList = [];
             this.domContainer = multilineInput;
-            // тут запасная единичка. реальная штука (maxCharCountInRow - 1)
-            this.maxCharCountInRow = (Number(multilineInput.getAttribute('maxCharCountInRow')) + 1) || null;
+            this.maxCharCountInRow = Number(multilineInput.getAttribute('maxCharCountInRow')) || null;
             this.maxRowCount = Number(multilineInput.getAttribute('maxRowCount')) || null;
 
             this.currentRow = null;
@@ -88,9 +86,7 @@
             this.rowList[index].elementInputText.focus();
         }
 
-        rowCount() {
-            return this.rowList.length;
-        }
+        rowCount = () => (this.rowList.length)
 
         addRow(index) {
             const newRow = new Row(this.rowCount() + 1, this.maxCharCountInRow);
@@ -144,12 +140,12 @@
 
                         const sum = prevRowValue + currentRowValue;
 
-                        if (sum.length < this.maxCharCountInRow) {
+                        if (sum.length <= this.maxCharCountInRow) {
                             this.rowList[currentRowNumber - 1].elementInputText.value = sum;
                             this.removeRow(currentRowNumber);
                         } else {
-                            this.rowList[currentRowNumber - 1].elementInputText.value = sum.slice(0, this.maxCharCountInRow - 1);
-                            this.rowList[currentRowNumber].elementInputText.value = sum.slice(this.maxCharCountInRow - 1);
+                            this.rowList[currentRowNumber - 1].elementInputText.value = sum.slice(0, this.maxCharCountInRow);
+                            this.rowList[currentRowNumber].elementInputText.value = sum.slice(this.maxCharCountInRow);
                             this.rowList[currentRowNumber].recalcCharCount();
                         }
 
@@ -197,20 +193,27 @@
         }
 
         inputHandler(event) {
-            // console.log(event);
             const currentRowValue = event.target.value;
             const currentRowNumber = event.target.rowNumber - 1;
+            let input_value = currentRowValue;
+            let row_input_index = 0;
 
-            if (currentRowValue.length > this.maxCharCountInRow - 1) {
-                event.target.value = currentRowValue.slice(0, -1);
-                this.rowList[currentRowNumber].recalcCharCount();
+            if (input_value.length > this.maxCharCountInRow) {
+                event.target.value = input_value.slice(0, this.maxCharCountInRow);
+                this.rowList[currentRowNumber + row_input_index].recalcCharCount();
 
-                if (this.rowCount() < this.maxRowCount) {
-                    this.addRow(currentRowNumber + 1);
-                    this.rowList[currentRowNumber + 1].elementInputText.value = currentRowValue.slice(-1);
-                    this.rowList[currentRowNumber + 1].recalcCharCount();
+                input_value = input_value.slice(this.maxCharCountInRow);
+                row_input_index += 1;
 
-                    this._focus(currentRowNumber + 1);
+                while (input_value.length > 0 && this.rowCount() < this.maxRowCount) {
+                    this.addRow(currentRowNumber + row_input_index);
+                    this.rowList[currentRowNumber + row_input_index].elementInputText.value = input_value.slice(0, this.maxCharCountInRow);
+                    this.rowList[currentRowNumber + row_input_index].recalcCharCount();
+
+                    this._focus(currentRowNumber + row_input_index);
+
+                    input_value = input_value.slice(this.maxCharCountInRow);
+                    row_input_index += 1;
                 }
             }
         }
