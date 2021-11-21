@@ -35,8 +35,7 @@
             this.domContainer = multilineInput;
             // тут запасная единичка. реальная штука (maxCharCountInRow - 1)
             this.maxCharCountInRow = (Number(multilineInput.getAttribute('maxCharCountInRow')) + 1) || null;
-
-            console.log("🚀 ~ file: numberedMultilineTextInput.js ~ line 37 ~ RowList ~ constructor ~ this.maxCharCountInRow", this.maxCharCountInRow);
+            this.maxRowCount = Number(multilineInput.getAttribute('maxRowCount')) || null;
 
             this.currentRow = null;
 
@@ -46,7 +45,7 @@
             // Клик вне строк, когда осталось свобоное место в контенере
             this.domContainer.addEventListener('click', (event) => {
                 if (event.target.tagName === 'DIV') {
-                    this._focus(this.rowList.length - 1);
+                    this._focus(this.rowCount() - 1);
                 }
             });
         }
@@ -78,7 +77,7 @@
         }
 
         _recalcLineNumbers(index) {
-            const listSize = this.rowList.length;
+            const listSize = this.rowCount();
             for (let i = index; i < listSize; i++) {
                 this.rowList[i].elementLineNum.textContent = i + 1;
                 this.rowList[i].elementInputText.rowNumber = i + 1;
@@ -89,11 +88,15 @@
             this.rowList[index].elementInputText.focus();
         }
 
+        rowCount() {
+            return this.rowList.length;
+        }
+
         addRow(index) {
-            const newRow = new Row(this.rowList.length + 1, this.maxCharCountInRow);
+            const newRow = new Row(this.rowCount() + 1, this.maxCharCountInRow);
             newRow.elementInputText.addEventListener('keydown', this.keydownHandler.bind(this));
             newRow.elementInputText.addEventListener('input', this.inputHandler.bind(this));
-            if (this.rowList.length > 0) {
+            if (this.rowCount() > 0) {
                 this._splice(newRow, index);
             } else {
                 this._push(newRow);
@@ -119,18 +122,19 @@
 
             switch (event.code) {
                 case 'Enter':
-                    event.target.value = currentRowValue.slice(0, carriagePosition);
+                    if (this.rowCount() < this.maxRowCount) {
+                        event.target.value = currentRowValue.slice(0, carriagePosition);
 
-                    this.addRow(currentRowNumber + 1);
-                    this._focus(currentRowNumber + 1);
+                        this.addRow(currentRowNumber + 1);
+                        this._focus(currentRowNumber + 1);
 
-                    this.rowList[currentRowNumber + 1].elementInputText.value = currentRowValue.slice(carriagePosition);
-                    this.rowList[currentRowNumber + 1].elementInputText.selectionStart = 0;
-                    this.rowList[currentRowNumber + 1].elementInputText.selectionEnd = 0;
+                        this.rowList[currentRowNumber + 1].elementInputText.value = currentRowValue.slice(carriagePosition);
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionStart = 0;
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionEnd = 0;
 
-                    this.rowList[currentRowNumber].recalcCharCount();
-                    this.rowList[currentRowNumber + 1].recalcCharCount();
-
+                        this.rowList[currentRowNumber].recalcCharCount();
+                        this.rowList[currentRowNumber + 1].recalcCharCount();
+                    }
                     break;
                 case 'Backspace':
                     if (carriagePosition === 0 && currentRowNumber > 0) {
@@ -158,7 +162,7 @@
                     }
                     break;
                 case 'ArrowDown':
-                    if (currentRowNumber < this.rowList.length - 1) {
+                    if (currentRowNumber < this.rowCount() - 1) {
                         this._focus(currentRowNumber + 1);
                     }
                     break;
@@ -167,7 +171,28 @@
                         this._focus(currentRowNumber - 1);
                     }
                     break;
+                case 'ArrowLeft':
+                    if (carriagePosition === 0 && currentRowNumber > 0) {
+                        event.preventDefault();
 
+                        const prevRowValue = this.rowList[currentRowNumber - 1].elementInputText.value;
+
+                        this._focus(currentRowNumber - 1);
+
+                        this.rowList[currentRowNumber - 1].elementInputText.selectionStart = prevRowValue.length;
+                        this.rowList[currentRowNumber - 1].elementInputText.selectionEnd = prevRowValue.length;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (carriagePosition === currentRowValue.length && currentRowNumber < this.rowCount()) {
+                        event.preventDefault();
+
+                        this._focus(currentRowNumber + 1);
+
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionStart = 0;
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionEnd = 0;
+                    }
+                    break;
             }
         }
 
@@ -177,14 +202,16 @@
             const currentRowNumber = event.target.rowNumber - 1;
 
             if (currentRowValue.length > this.maxCharCountInRow - 1) {
-                this.addRow(currentRowNumber + 1);
-                this.rowList[currentRowNumber + 1].elementInputText.value = currentRowValue.slice(-1);
-                this.rowList[currentRowNumber + 1].recalcCharCount();
-
                 event.target.value = currentRowValue.slice(0, -1);
                 this.rowList[currentRowNumber].recalcCharCount();
 
-                this._focus(currentRowNumber + 1);
+                if (this.rowCount() < this.maxRowCount) {
+                    this.addRow(currentRowNumber + 1);
+                    this.rowList[currentRowNumber + 1].elementInputText.value = currentRowValue.slice(-1);
+                    this.rowList[currentRowNumber + 1].recalcCharCount();
+
+                    this._focus(currentRowNumber + 1);
+                }
             }
         }
 
