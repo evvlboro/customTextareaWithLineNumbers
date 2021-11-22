@@ -18,6 +18,11 @@
         text-align: end;
         padding-right: 2px;
         padding-top: 3px;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
       }
 
       .multiline-input__input-text {
@@ -28,4 +33,9 @@
         grid-column: 3;
         padding-left: 2px;
         padding-top: 3px;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
       }

@@ -10,14 +10,14 @@
 
             const template = document.createElement('template');
 
-            template.innerHTML = `<span class="multiline-input__line-num">${lineNum}</span>`;
+            template.innerHTML = `<span class="multiline-input__line-num" unselectable="on">${lineNum}</span>`;
             this.elementLineNum = template.content.firstChild;
 
             template.innerHTML = `<input type="text" class="multiline-input__input-text"></input>`;
             this.elementInputText = template.content.firstChild;
             this.elementInputText.rowNumber = lineNum;
 
-            template.innerHTML = `<span class="multiline-input__number-of-char-in-line">${0}</span>`;
+            template.innerHTML = `<span class="multiline-input__number-of-char-in-line" unselectable="on">${0}</span>`;
             this.elementCharCount = template.content.firstChild;
 
             this.elementInputText.addEventListener('input', this.recalcCharCount.bind(this));
