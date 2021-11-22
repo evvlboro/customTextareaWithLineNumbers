@@ -241,17 +241,12 @@
                     row_input_index += 1;
                 }
 
-                // кодить тут
+                const cursorRowNumOffset = Math.trunc(currentCurrorPosition / this.maxCharCountInRow);
 
-                this._focus(currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow ));
-                console.log("🚀 ~ file: numberedMultilineTextInput.js ~ line 245 ~ RowList ~ inputHandler ~ currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow )", currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow ))
-                this.rowList[currentRowNumber + row_input_index - 1].elementInputText.selectionStart = currentCurrorPosition % this.maxCharCountInRow;
-                this.rowList[currentRowNumber + row_input_index - 1].elementInputText.selectionEnd = currentCurrorPosition % this.maxCharCountInRow;
+                this._focus(currentRowNumber + cursorRowNumOffset);
+                this.rowList[currentRowNumber + cursorRowNumOffset].elementInputText.selectionStart = currentCurrorPosition % this.maxCharCountInRow;
+                this.rowList[currentRowNumber + cursorRowNumOffset].elementInputText.selectionEnd = currentCurrorPosition % this.maxCharCountInRow;
             }
-
-            
-            console.log('curPos =  ', currentCurrorPosition % this.maxCharCountInRow);
-
         }
     }
 
