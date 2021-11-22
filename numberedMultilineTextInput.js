@@ -183,12 +183,24 @@
                     break;
                 case 'ArrowDown':
                     if (currentRowNumber < this.rowCount() - 1) {
+                        event.preventDefault();
+
+                        const newRowValueLength = this.rowList[currentRowNumber + 1].elementInputText.value.length;
+
                         this._focus(currentRowNumber + 1);
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionStart = Math.min(carriagePosition, newRowValueLength);
+                        this.rowList[currentRowNumber + 1].elementInputText.selectionEnd = Math.min(carriagePosition, newRowValueLength);
                     }
                     break;
                 case 'ArrowUp':
                     if (currentRowNumber > 0) {
+                        event.preventDefault();
+
+                        const newRowValueLength = this.rowList[currentRowNumber - 1].elementInputText.value.length;
+
                         this._focus(currentRowNumber - 1);
+                        this.rowList[currentRowNumber - 1].elementInputText.selectionStart = Math.min(carriagePosition, newRowValueLength);
+                        this.rowList[currentRowNumber - 1].elementInputText.selectionEnd = Math.min(carriagePosition, newRowValueLength);
                     }
                     break;
                 case 'ArrowLeft':
