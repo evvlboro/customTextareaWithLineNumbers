@@ -82,8 +82,8 @@
             }
         }
 
-        _focus(index) {
-            this.rowList[index].elementInputText.focus();
+        _focus(rowIndex) {
+            this.rowList[rowIndex].elementInputText.focus();
         }
 
         rowCount = () => (this.rowList.length)
@@ -115,7 +115,6 @@
             const currentRowNumber = event.target.rowNumber - 1;
             const currentRowValue = event.target.value;
             const carriagePosition = event.target.selectionStart;
-            console.log(event.code);
             switch (event.code) {
                 case 'Enter':
                     if (this.rowCount() < this.maxRowCount) {
@@ -220,8 +219,11 @@
         inputHandler(event) {
             const currentRowValue = event.target.value;
             const currentRowNumber = event.target.rowNumber - 1;
+            const currentCurrorPosition = event.target.selectionEnd;
             let input_value = currentRowValue;
             let row_input_index = 0;
+
+
 
             if (input_value.length > this.maxCharCountInRow) {
                 event.target.value = input_value.slice(0, this.maxCharCountInRow);
@@ -235,12 +237,21 @@
                     this.rowList[currentRowNumber + row_input_index].elementInputText.value = input_value.slice(0, this.maxCharCountInRow);
                     this.rowList[currentRowNumber + row_input_index].recalcCharCount();
 
-                    this._focus(currentRowNumber + row_input_index);
-
                     input_value = input_value.slice(this.maxCharCountInRow);
                     row_input_index += 1;
                 }
+
+                // кодить тут
+
+                this._focus(currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow ));
+                console.log("🚀 ~ file: numberedMultilineTextInput.js ~ line 245 ~ RowList ~ inputHandler ~ currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow )", currentRowNumber + Math.trunc( currentCurrorPosition / this.maxCharCountInRow ))
+                this.rowList[currentRowNumber + row_input_index - 1].elementInputText.selectionStart = currentCurrorPosition % this.maxCharCountInRow;
+                this.rowList[currentRowNumber + row_input_index - 1].elementInputText.selectionEnd = currentCurrorPosition % this.maxCharCountInRow;
             }
+
+            
+            console.log('curPos =  ', currentCurrorPosition % this.maxCharCountInRow);
+
         }
     }
 
